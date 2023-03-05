@@ -39,16 +39,14 @@ public class SpotifyRepository {
 
     public User createUser(String name, String mobile) {
 
-        for(User user : users){
-            if(user.getMobile().equals(mobile)){
-                return user;
+        for(User curuser : users){
+            if(curuser.getMobile().equals(mobile)){
+                return curuser;
             }
         }
-            User user = new User();
-            user.setName(name);
-            user.setMobile(mobile);
-            users.add(user);
-            return user;
+            User newuser = new User(name,mobile);
+            users.add(newuser);
+            return newuser;
 
     }
 
@@ -92,8 +90,9 @@ public class SpotifyRepository {
         //putting artist nd album in Db
         List<Album> alb_List = new ArrayList<>();
         if(artistAlbumMap.containsKey(artist)){
-            artistAlbumMap.get(artist).add(album);
+            alb_List=artistAlbumMap.get(artist);
         }
+        alb_List.add(album);
         artistAlbumMap.put(artist,alb_List);// if not exist in Db
         return  album;
     }
@@ -112,16 +111,16 @@ public class SpotifyRepository {
             throw new Exception("Album does not exist");
         }
         Song song = new Song(title,length);
-        //adding song to list songs
+        //adding songs to songs-list
         songs.add(song);
 
-        //adding album n its song to albumsongsMap
-        List<Song> songslist= new ArrayList<>();
+
+        List<Song> songsList= new ArrayList<>();
         if(albumSongMap.containsKey(album)){
-            songslist=albumSongMap.get(album);
+            songsList=albumSongMap.get(album);
         }
-        songslist.add(song);
-        albumSongMap.put(album,songslist);
+        songsList.add(song);
+        albumSongMap.put(album,songsList);
 
         return song;
 
@@ -137,13 +136,13 @@ public class SpotifyRepository {
       //addidng playlist to playlist List
         playlists.add(playlist);
 
-        List<Song> temp = new ArrayList<>();
+        List<Song> mysong = new ArrayList<>();
         for(Song song : songs){
             if(song.getLength()==length){
-                temp.add(song);
+                mysong.add(song);
             }
         }
-        playlistSongMap.put(playlist,temp);
+        playlistSongMap.put(playlist,mysong);
 
         User curUser = new User();
         boolean flag = false;
@@ -168,12 +167,12 @@ public class SpotifyRepository {
 
         creatorPlaylistMap.put(curUser,playlist);
 
-        List<Playlist>userplaylists = new ArrayList<>();
+        List<Playlist>userplaylist = new ArrayList<>();
         if(userPlaylistMap.containsKey(curUser)){
-            userplaylists=userPlaylistMap.get(curUser);
+            userplaylist=userPlaylistMap.get(curUser);
         }
-        userplaylists.add(playlist);
-        userPlaylistMap.put(curUser,userplaylists);
+        userplaylist.add(playlist);
+        userPlaylistMap.put(curUser,userplaylist);
         return playlist;
     }
 
@@ -183,16 +182,16 @@ public class SpotifyRepository {
                 return  playlist;
         }
         Playlist playlist = new Playlist(title);
-        // adding playlist to playlists list
+        // adding playlist-to-playlistslist
         playlists.add(playlist);
 
-        List<Song> temp= new ArrayList<>();
+        List<Song> list= new ArrayList<>();
         for(Song song : songs){
             if(songTitles.contains(song.getTitle())){
-                temp.add(song);
+                list.add(song);
             }
         }
-        playlistSongMap.put(playlist,temp);
+        playlistSongMap.put(playlist,list);
 
         User curUser= new User();
         boolean flag= false;
@@ -303,14 +302,14 @@ public class SpotifyRepository {
             throw new Exception("Song does not exist");
         }
         //HashMap<Song, List<User>> songLikeMap
-        List<User> user = new ArrayList<>();
+        List<User> users = new ArrayList<>();
         if(songLikeMap.containsKey(song)){
-            user = songLikeMap.get(song);
+            users = songLikeMap.get(song);
         }
 
-        if(user.contains(curuser)==false) {
-            user.add(curuser);
-            songLikeMap.put(song, user);
+        if(!users.contains(curuser)) {
+            users.add(curuser);
+            songLikeMap.put(song, users);
             song.setLikes(song.getLikes() + 1);
 
             //HashMap<Album, List<Song>> albumSongmap Db
